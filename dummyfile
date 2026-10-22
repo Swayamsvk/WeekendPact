@@ -1,0 +1,12 @@
+function sayHiGenerator() {
+  yield "Hey";
+  return "Hi";
+}
+
+const resultGenerator = sayHiGenerator();
+console.log(resultGenerator);
+{
+  [iterator];
+}
+
+consol.log(resultGenerator.next());

@@ -1,0 +1,11 @@
+{
+  "files": {
+    "apps/checkout_lab/.turbo/turbo-lint.log": {
+      "size": 637,
+      "mtime_nanos": 1791553190860172014,
+      "mode": 420,
+      "is_dir": false
+    }
+  },
+  "order": ["apps/checkout_lab/.turbo/turbo-lint.log"]
+}

@@ -1,1 +1,11 @@
-{"files":{"apps/checkout_lab/.turbo/turbo-build.log":{"size":159,"mtime_nanos":1780856700495212343,"mode":420,"is_dir":false}},"order":["apps/checkout_lab/.turbo/turbo-build.log"]}
+{
+  "files": {
+    "apps/checkout_lab/.turbo/turbo-build.log": {
+      "size": 159,
+      "mtime_nanos": 1780856700495212343,
+      "mode": 420,
+      "is_dir": false
+    }
+  },
+  "order": ["apps/checkout_lab/.turbo/turbo-build.log"]
+}

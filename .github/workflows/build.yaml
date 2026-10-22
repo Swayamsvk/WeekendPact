@@ -1,0 +1,33 @@
+name: Android Build
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  android:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - run: npm ci
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: zulu
+          java-version: 17
+
+      - name: Build APK
+        working-directory: apps/checkout_lab/android
+        run: ENVFILE=.env.e2e ./gradlew assembleRelease
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: checkout_lab-apk
+          path: apps/checkout_lab/android/app/build/outputs/apk/release/app-release.apk
