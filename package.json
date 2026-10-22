@@ -37,5 +37,8 @@
     "lint-staged": "^16.4.0",
     "prettier": "^3.9.9",
     "turbo": "^2.9.16"
+  },
+  "dependencies": {
+    "react-hook-form": "^7.90.0"
   }
 }
