@@ -4,7 +4,8 @@ import { db } from '../store.js';
 import { sendError } from '../errors.js';
 import { scenarioFor } from '../scenarios.js';
 import { applyCoupon, calculateTotals, type PricedLine } from '../pricing.js';
-import type { Quote, QuoteRequest } from '../types.js';
+import { buildDeliveryOptions, isServiceable, isValidPincode } from '../delivery.js';
+import type { DeliveryOptionId, Quote, QuoteRequest } from '../types.js';
 
 const QUOTE_TTL_MS = 10 * 60 * 1000; // 10 minutes
 const MAX_QUANTITY = 10;
@@ -78,13 +79,43 @@ export async function pricingRoutes(app: FastifyInstance) {
       discountMinor = result.discountMinor;
     }
 
-    // 4. Calculate and save the quote
-    const totals = calculateTotals(lines, discountMinor);
+    // 4. Delivery fee from the chosen option (same rules as GET /delivery/options)
+    let shippingMinor: number | undefined;
+    let deliveryOptionId: DeliveryOptionId | null = null;
+
+    if (body.deliveryOptionId) {
+      const pincode = body.pincode ?? '';
+      if (!isValidPincode(pincode)) {
+        return sendError(reply, 400, 'VALIDATION', 'A valid pincode is required to choose delivery', {
+          pincode: 'Pincode must be 6 digits',
+        });
+      }
+      if (!isServiceable(pincode)) {
+        return sendError(reply, 422, 'PINCODE_NOT_SERVICEABLE', "Sorry, we don't deliver to this pincode yet");
+      }
+      const option = buildDeliveryOptions(pincode, subtotalMinor - discountMinor).find(
+        o => o.id === body.deliveryOptionId,
+      );
+      if (!option) {
+        return sendError(
+          reply,
+          422,
+          'DELIVERY_OPTION_UNAVAILABLE',
+          "This delivery option isn't available for your address",
+        );
+      }
+      shippingMinor = option.feeMinor;
+      deliveryOptionId = option.id;
+    }
+
+    // 5. Calculate and save the quote
+    const totals = calculateTotals(lines, discountMinor, shippingMinor);
     const quote: Quote = {
       quoteId: `qt_${randomUUID()}`,
       expiresAt: new Date(Date.now() + QUOTE_TTL_MS).toISOString(),
       currency: 'INR',
       couponCode,
+      deliveryOptionId,
       ...totals,
     };
     db.quotes.set(quote.quoteId, quote);

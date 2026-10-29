@@ -3,6 +3,7 @@ import { scenarioFor } from './scenarios.js';
 import { sendError } from './errors.js';
 import { productRoutes } from './routes/products.js';
 import { pricingRoutes } from './routes/pricing.js';
+import { deliveryRoutes } from './routes/delivery.js';
 import { paymentRoutes } from './routes/payments.js';
 import { orderRoutes } from './routes/orders.js';
 import { adminRoutes } from './routes/admin.js';
@@ -12,7 +13,7 @@ const app = Fastify({ logger: true });
 // Runs before every endpoint: applies "slow" and "server_error"
 app.addHook('preHandler', async (request, reply) => {
   if (request.url.startsWith('/__mock') || request.url === '/health') {
-    return; // never break the controls
+    return;
   }
   const scenario = scenarioFor(request);
   if (scenario === 'slow') {
@@ -27,6 +28,7 @@ app.get('/health', async () => ({ ok: true }));
 
 await app.register(productRoutes);
 await app.register(pricingRoutes);
+await app.register(deliveryRoutes);
 await app.register(paymentRoutes);
 await app.register(orderRoutes);
 await app.register(adminRoutes);
