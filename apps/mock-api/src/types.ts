@@ -15,11 +15,31 @@ export type ApiErrorBody = {
   errors?: Record<string, string>;
 };
 
+// ---------- Delivery ----------
+
+export type DeliveryOptionId = 'standard' | 'express' | 'same_day';
+
+export type DeliveryOption = {
+  id: DeliveryOptionId;
+  label: string;
+  description: string;
+  feeMinor: number;
+  estimatedFrom: string; // YYYY-MM-DD
+  estimatedTo: string; // YYYY-MM-DD
+};
+
+export type DeliveryOptionsResponse = {
+  pincode: string;
+  options: DeliveryOption[];
+};
+
 // ---------- Pricing ----------
 
 export type QuoteRequest = {
   items: { productId: string; quantity: number }[];
   couponCode?: string;
+  pincode?: string; // required when deliveryOptionId is sent
+  deliveryOptionId?: DeliveryOptionId;
 };
 
 export type QuoteLine = {
@@ -36,6 +56,7 @@ export type Quote = {
   currency: 'INR';
   lines: QuoteLine[];
   couponCode: string | null;
+  deliveryOptionId: DeliveryOptionId | null;
   subtotalMinor: number;
   discountMinor: number;
   shippingMinor: number;

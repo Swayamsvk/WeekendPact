@@ -39,7 +39,11 @@ export function applyCoupon(code: string, subtotalMinor: number): CouponResult {
   return { ok: true, discountMinor: Math.min(coupon.amountMinor, subtotalMinor) };
 }
 
-export function calculateTotals(lines: PricedLine[], discountMinor: number) {
+/**
+ * @param shippingMinor the chosen delivery option's fee.
+ *   Leave it out to use the default rule (free from ₹999, otherwise ₹49).
+ */
+export function calculateTotals(lines: PricedLine[], discountMinor: number, shippingMinor?: number) {
   const pricedLines = lines.map(line => ({
     ...line,
     lineTotalMinor: line.unitPriceMinor * line.quantity,
@@ -47,10 +51,18 @@ export function calculateTotals(lines: PricedLine[], discountMinor: number) {
 
   const subtotalMinor = pricedLines.reduce((sum, line) => sum + line.lineTotalMinor, 0);
   const afterDiscountMinor = subtotalMinor - discountMinor;
-  const shippingMinor =
-    afterDiscountMinor >= FREE_SHIPPING_THRESHOLD_MINOR ? 0 : SHIPPING_FEE_MINOR;
+  const shipping =
+    shippingMinor ??
+    (afterDiscountMinor >= FREE_SHIPPING_THRESHOLD_MINOR ? 0 : SHIPPING_FEE_MINOR);
   const taxMinor = Math.round((afterDiscountMinor * GST_PERCENT) / 100);
-  const totalMinor = afterDiscountMinor + shippingMinor + taxMinor;
+  const totalMinor = afterDiscountMinor + shipping + taxMinor;
 
-  return { lines: pricedLines, subtotalMinor, discountMinor, shippingMinor, taxMinor, totalMinor };
+  return {
+    lines: pricedLines,
+    subtotalMinor,
+    discountMinor,
+    shippingMinor: shipping,
+    taxMinor,
+    totalMinor,
+  };
 }
