@@ -106,3 +106,10 @@ export type Order = {
   currency: 'INR';
   createdAt: string;
 };
+
+// ---------- Payment next actions ----------
+// What the app must do after creating a payment attempt
+export type NextAction =
+  | { type: 'none' } // nothing (e.g. cash on delivery)
+  | { type: 'upi_intent'; uri: string } // open a UPI app with this upi:// link
+  | { type: 'card_form' }; // show the payment provider's card screen
