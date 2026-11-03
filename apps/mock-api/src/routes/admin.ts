@@ -1,5 +1,5 @@
 import type { FastifyInstance } from 'fastify';
-import { resetDb } from '../store.js';
+import { db, resetDb } from '../store.js';
 import { SCENARIOS, getGlobalScenario, isScenario, setGlobalScenario } from '../scenarios.js';
 import { sendError } from '../errors.js';
 
@@ -24,5 +24,27 @@ export async function adminRoutes(app: FastifyInstance) {
     }
     setGlobalScenario(scenario);
     return { ok: true, scenario };
+  });
+
+  // POST /__mock/payments/complete-pending { "status": "succeeded" | "failed" }
+  // Finishes every payment that's still pending: simulates a late bank response.
+  app.post<{ Body: { status?: unknown } }>('/__mock/payments/complete-pending', async (request, reply) => {
+    const status = request.body?.status;
+    if (status !== 'succeeded' && status !== 'failed') {
+      return sendError(reply, 400, 'VALIDATION', 'status must be "succeeded" or "failed"');
+    }
+
+    let completed = 0;
+    for (const payment of db.payments.values()) {
+      if (payment.status !== 'pending') continue;
+      payment.status = status;
+      if (status === 'failed') {
+        payment.failureCode = 'DECLINED';
+        payment.failureMessage = 'Your bank declined this payment';
+      }
+      payment.updatedAt = new Date().toISOString();
+      completed++;
+    }
+    return { ok: true, completed };
   });
 }
