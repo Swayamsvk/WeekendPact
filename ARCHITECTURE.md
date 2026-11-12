@@ -45,3 +45,35 @@ Setup tracker
 [ ] React Native bridge/event contracts
 [ ] Deep linking configuration
 [ ] Native build and device testing
+
+1. Core modules — essential to the product
+   These directly enable SplitTrip's main purpose: planning group trips, booking activities and managing shared costs.
+
+# Your module Priority
+
+1 End-to-End Checkout Flow Core
+2 Search + PLP System Core
+3 PDP Product Experience Core
+5 Deep Linking + Navigation Parser Core
+9 Offline-Aware Cart / Wishlist Sync Core
+10 Notification Inbox + Campaign Handling Core
+11 Returns / Exchanges Flow Core
+
+2. Supporting modules — important for a complete product
+   These improve usability, personalization and product management.
+
+# Your module Priority
+
+4 Dynamic CMS Widget Engine Supporting
+6 Analytics / Event Tracking Platform Supporting
+7 Personalized AI Shopping Assistant Supporting
+14 Remote Config / Feature Flag Platform Supporting
+15 Testing Infrastructure Supporting — but start testing from day one
+
+3. Optional enhancements — build after the core
+
+# Your module Priority
+
+8 Loyalty / Club Apparel Module Optional
+12 Native Widgets / App Extensions Optional
+13 Performance + Startup Modernization Enhancement
